@@ -12,8 +12,11 @@ export default function (options) {
     name: 'vue-inline-svg',
     transform: (source, id) => {
       if (!filter(id)) return null;
-      const compiled = compiler.compile(source, { preserveWhitespace: false });
-      const transformed = transpile(`module.exports = { render: function () { ${compiled.render} } };`).replace('module.exports =', 'export default');
+      let svg = source.replace('export default "data:image/svg+xml,', '');
+      svg = svg.slice(0, svg.length - 1);
+      svg = decodeURIComponent(svg);
+      const compiled = compiler.compile(svg, { preserveWhitespace: false });
+      const transformed = transpile(`module.exports = { render: function() { ${compiled.render} } };`).replace('module.exports =', 'export default');
       return transformed;
     },
   };
